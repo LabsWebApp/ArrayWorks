@@ -10,7 +10,7 @@ static bool ArrayContains(int[] numbers, int number)
 static int[] UniqueRandomArray(int min, int max, int length, Random? random = null)
 {
     if (min >= max) throw new ArgumentException("Не верно задан диапазон: min >= max");
-    if ((max - min) < length) throw new ArgumentException("Диапазон не позволяет создать уникальный список: (max - min) <= length");
+    if (max - min < length) throw new ArgumentException("Диапазон не позволяет создать уникальный список: (max - min) <= length");
 
     random = random ?? new Random(DateTime.Now.Microsecond);
     var result = new int[length];
@@ -28,7 +28,6 @@ static int[] UniqueRandomArray(int min, int max, int length, Random? random = nu
                     zeroFirst = false;
                     break;
                 }
-                continue;
             }
         } while (ArrayContains(result, res));
         result[i] = res;
