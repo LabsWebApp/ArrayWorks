@@ -1,0 +1,58 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="01_BogoSort.cs">
+			<DependentUpon>Sorts.cs</DependentUpon>
+		</None>
+		<None Include="02_BubbleSort.cs">
+			<DependentUpon>Sorts.cs</DependentUpon>
+		</None>
+		<None Include="03_ShakerSort.cs">
+			<DependentUpon>Sorts.cs</DependentUpon>
+		</None>
+		<None Include="04_InsertionSort.cs">
+			<DependentUpon>Sorts.cs</DependentUpon>
+		</None>
+		<None Include="05_StoogeSort.cs">
+			<DependentUpon>Sorts.cs</DependentUpon>
+		</None>
+		<None Include="06_PancakeSort.cs">
+			<DependentUpon>Sorts.cs</DependentUpon>
+		</None>
+		<None Include="07_ShellSort.cs">
+			<DependentUpon>Sorts.cs</DependentUpon>
+		</None>
+		<None Include="08_MergeSort.cs">
+			<DependentUpon>Sorts.cs</DependentUpon>
+		</None>
+		<None Include="09_SelectionSort.cs">
+			<DependentUpon>Sorts.cs</DependentUpon>
+		</None>
+		<None Include="10_QuickSort.cs">
+			<DependentUpon>Sorts.cs</DependentUpon>
+		</None>
+		<None Include="11_GnomeSort.cs">
+			<DependentUpon>Sorts.cs</DependentUpon>
+		</None>
+		<None Include="12_TreeSort.cs">
+			<DependentUpon>Sorts.cs</DependentUpon>
+		</None>
+		<None Include="13_CombSort.cs">
+			<DependentUpon>Sorts.cs</DependentUpon>
+		</None>
+		<None Include="14_CountingSort.cs">
+			<DependentUpon>Sorts.cs</DependentUpon>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\ArrayOperations\ArrayOperations.csproj" />
+	</ItemGroup>
+
+</Project>

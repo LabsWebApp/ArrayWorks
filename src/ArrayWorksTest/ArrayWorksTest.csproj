@@ -7,4 +7,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ArrayOperations\ArrayOperations.csproj" />
+    <ProjectReference Include="..\ArraySorts\ArraySorts.csproj" />
+  </ItemGroup>
+
 </Project>
