@@ -16,16 +16,18 @@
 public static partial class SortExtensions
 {
     //метод для слияния массивов
-    private static void Merge(this int[] array, int lowIndex, int middleIndex, int highIndex)
+    private static void Merge<TNumber>(TNumber[] array, int lowIndex, int middleIndex, int highIndex, bool desc)
+        where TNumber : INumber<TNumber>
     {
         var left = lowIndex;
         var right = middleIndex + 1;
-        var tempArray = new int[highIndex - lowIndex + 1];
+        var tempArray = new TNumber[highIndex - lowIndex + 1];
         var index = 0;
+        var less = Less<TNumber>(desc);
 
         while (left <= middleIndex && right <= highIndex)
         {
-            if (array[left] < array[right]) tempArray[index++] = array[left++];
+            if (less(array[left], array[right])) tempArray[index++] = array[left++];
             else tempArray[index++] = array[right++];
         }
 
@@ -37,20 +39,37 @@ public static partial class SortExtensions
     }
 
     //сортировка слиянием
-    private static int[] MergeSort(this int[] array, int lowIndex, int highIndex)
+    private static TNumber[] MergeSort<TNumber>(TNumber[] array, int lowIndex, int highIndex, bool desc)
+        where TNumber : INumber<TNumber>
     {
-        if (array.Length < 2) return array;
         if (lowIndex < highIndex)
         {
             var middleIndex = (lowIndex + highIndex) >> 1;
-            MergeSort(array, lowIndex, middleIndex);
-            MergeSort(array, middleIndex + 1, highIndex);
-            Merge(array, lowIndex, middleIndex, highIndex);
+            MergeSort(array, lowIndex, middleIndex, desc);
+            MergeSort(array, middleIndex + 1, highIndex, desc);
+            Merge(array, lowIndex, middleIndex, highIndex, desc);
         }
 
         return array;
     }
 
-    public static int[] MergeSort(this int[] array) =>
-        MergeSort(array, 0, array.Length - 1);
+    private static TNumber[] MergeSortBase<TNumber>(TNumber[] array, bool desc)
+        where TNumber : INumber<TNumber> =>
+        MergeSort(array, 0, array.Length - 1, desc);
+
+    /// <summary>
+    /// сортировка слиянием, входящий массив будет отсортирован
+    /// </summary>
+    /// <param name="array">входящий массив</param>
+    /// <returns>отсортированный входящий массив</returns>
+    public static TNumber[] MergeSort<TNumber>(this TNumber[] array)
+        where TNumber : INumber<TNumber> => MergeSortBase(array, false);
+
+    /// <summary>
+    /// сортировка слиянием по убыванию, входящий массив будет отсортирован
+    /// </summary>
+    /// <param name="array">входящий массив</param>
+    /// <returns>отсортированный по убыванию входящий массив</returns>
+    public static TNumber[] MergeSortDesc<TNumber>(this TNumber[] array)
+        where TNumber : INumber<TNumber> => MergeSortBase(array, true);
 }

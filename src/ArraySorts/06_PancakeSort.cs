@@ -20,10 +20,11 @@
 public static partial class SortExtensions
 {
     //метод для получения индекса максимального элемента подмассива
-    private static int IndexOfMax(this int[] a, int n)
+    private static int IndexOfMax(this int[] a, int n, bool desc)
     {
         var result = 0;
-        for (var i = 1; i <= n; ++i) if (a[i] > a[result]) result = i;
+        var greater = Greater<int>(desc);
+        for (var i = 1; i <= n; ++i) if (greater(a[i], a[result])) result = i;
         return result;
     }
 
@@ -34,13 +35,12 @@ public static partial class SortExtensions
     }
 
     //блинная сортировка
-    public static int[] PancakeSort(this int[] array)
+    private static int[] PancakeSortBase(int[] array, bool desc)
     {
-        if (array.Length < 2) return array;
         for (var subArrayLength = array.Length - 1; subArrayLength >= 0; subArrayLength--)
         {
             //получаем позицию максимального элемента подмассива
-            var indexOfMax = array.IndexOfMax(subArrayLength);
+            var indexOfMax = array.IndexOfMax(subArrayLength, desc);
             if (indexOfMax != subArrayLength)
             {
                 //переворот массива до индекса максимального элемента
@@ -53,4 +53,18 @@ public static partial class SortExtensions
 
         return array;
     }
+
+    /// <summary>
+    /// блинная сортировка, входящий массив будет отсортирован
+    /// </summary>
+    /// <param name="array">входящий массив</param>
+    /// <returns>отсортированный входящий массив</returns>
+    public static int[] PancakeSort(this int[] array) => PancakeSortBase(array, false);
+
+    /// <summary>
+    /// блинная сортировка по убыванию, входящий массив будет отсортирован
+    /// </summary>
+    /// <param name="array">входящий массив</param>
+    /// <returns>отсортированный по убыванию входящий массив</returns>
+    public static int[] PancakeSortDesc(this int[] array) => PancakeSortBase(array, true);
 }

@@ -3,21 +3,31 @@
 /// <summary>
 /// Простая реализация бинарного дерева
 /// </summary>
-internal class TreeNode
+internal class TreeNode<TNumber>
+    where TNumber : INumber<TNumber>
 {
-    public TreeNode(int data) => Data = data;
+    public TreeNode(TNumber data) => Data = data;
 
-    //данные
-    public int Data { get; set; }
+    /// <summary>
+    /// данные
+    /// </summary>
+    public TNumber Data { get; set; }
 
-    //левая ветка дерева
-    public TreeNode? Left { get; set; }
+    /// <summary>
+    /// левая ветка дерева
+    /// </summary>
+    public TreeNode<TNumber>? Left { get; set; }
 
-    //правая ветка дерева
-    public TreeNode? Right { get; set; }
+    /// <summary>
+    /// правая ветка дерева
+    /// </summary>
+    public TreeNode<TNumber>? Right { get; set; }
 
-    //рекурсивное добавление узла в дерево
-    public void Insert(TreeNode node)
+    /// <summary>
+    /// рекурсивное добавление узла в дерево
+    /// </summary>
+    /// <param name="node">узел, который требуется добавить</param>
+    public void Insert(TreeNode<TNumber> node)
     {
         if (node.Data < Data)
         {
@@ -31,16 +41,23 @@ internal class TreeNode
         }
     }
 
-    //рекурсивное преобразование дерева в отсортированный массив
-    public int[] Transform(ICollection<int>? elements = null)
+    /// <summary>
+    /// рекурсивное преобразование дерева в отсортированный массив
+    /// </summary>
+    /// <param name="elements">аккумулятивная коллекция узлов дерева</param>
+    /// <param name="desc">true - если необходимо отсортировать массив по убыванию иначе по возрастанию</param>
+    /// <returns>отсортированный массив</returns>
+    public TNumber[] Transform(bool desc, ICollection<TNumber>? elements = null)
     {
-        elements ??= new List<int>();
+        elements ??= new List<TNumber>();
 
-        Left?.Transform(elements);
+        if (desc) Right?.Transform(desc, elements);
+        else Left?.Transform(desc, elements);
 
         elements.Add(Data);
 
-        Right?.Transform(elements);
+        if (desc) Left?.Transform(desc, elements);
+        else Right?.Transform(desc, elements);
 
         return elements.ToArray();
     }

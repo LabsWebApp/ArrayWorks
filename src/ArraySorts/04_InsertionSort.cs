@@ -1,6 +1,4 @@
-﻿using ArraySorts.Helpers;
-
-namespace ArraySorts;
+﻿namespace ArraySorts;
 
 /*
  * Сортировка вставками (insertion sort) - это алгоритм сортировки,
@@ -20,21 +18,36 @@ namespace ArraySorts;
 public static partial class SortExtensions
 {
     //сортировка вставками
-    public static int[] InsertionSort(this int[] array)
+    private static TNumber[] InsertionSortBase<TNumber>(TNumber[] array, bool desc)
+        where TNumber : INumber<TNumber>
     {
-        if (array.Length < 2) return array;
+        var greater = Greater<TNumber>(desc);
         for (var i = 1; i < array.Length; i++)
         {
-            var key = array[i];
             var j = i;
-            while (j > 0 && array[j - 1] > key)
+
+            while (j > 0 && greater(array[j - 1], array[j]))
             {
                 array.Swap(j - 1, j);
-                j--;
+                --j;
             }
-
-            array[j] = key;
         }
         return array;
     }
+
+    /// <summary>
+    /// сортировка вставками, входящий массив будет отсортирован
+    /// </summary>
+    /// <param name="array">входящий массив</param>
+    /// <returns>отсортированный входящий массив</returns>
+    public static TNumber[] InsertionSort<TNumber>(this TNumber[] array)
+        where TNumber : INumber<TNumber> => InsertionSortBase(array, false);
+
+    /// <summary>
+    /// сортировка вставками по убыванию, входящий массив будет отсортирован
+    /// </summary>
+    /// <param name="array">входящий массив</param>
+    /// <returns>отсортированный по убыванию входящий массив</returns>
+    public static TNumber[] InsertionSortDesc<TNumber>(this TNumber[] array)
+        where TNumber : INumber<TNumber> => InsertionSortBase(array, true);
 }

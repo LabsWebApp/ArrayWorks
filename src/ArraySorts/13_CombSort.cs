@@ -28,16 +28,19 @@ public static partial class SortExtensions
         return s > 1 ? s : 1;
     }
 
-    public static int[] CombSort(this int[] array)
+    //Сортировка расчёской
+    private static TNumber[] CombSortBase<TNumber>(TNumber[] array, bool desc)
+        where TNumber : INumber<TNumber>
     {
-        if (array.Length < 2) return array;
         var arrayLength = array.Length;
         var currentStep = arrayLength - 1;
 
+        var greater = Greater<TNumber>(desc);
         while (currentStep > 1)
         {
-            for (int i = 0; i + currentStep < array.Length; i++)
-                if (array[i] > array[i + currentStep]) array.Swap(i, i + currentStep);
+            for (var i = 0; i + currentStep < array.Length; i++)
+                if (greater(array[i], array[i + currentStep])) 
+                    array.Swap(i, i + currentStep);
 
             currentStep = GetNextStep(currentStep);
         }
@@ -48,7 +51,7 @@ public static partial class SortExtensions
             var swapFlag = false;
             for (var j = 0; j < arrayLength - i; j++)
             {
-                if (array[j] > array[j + 1])
+                if (greater(array[j], array[j + 1]))
                 {
                     array.Swap(j, j + 1);
                     swapFlag = true;
@@ -60,4 +63,20 @@ public static partial class SortExtensions
 
         return array;
     }
+
+    /// <summary>
+    /// Сортировка расчёской, входящий массив будет отсортирован
+    /// </summary>
+    /// <param name="array">входящий массив</param>
+    /// <returns>отсортированный массив</returns>
+    public static TNumber[] CombSort<TNumber>(this TNumber[] array)
+        where TNumber : INumber<TNumber> => CombSortBase(array, false);
+
+    /// <summary>
+    /// Сортировка расчёской, входящий массив будет отсортирован
+    /// </summary>
+    /// <param name="array">входящий массив</param>
+    /// <returns>отсортированный по убыванию входящий массив</returns>
+    public static TNumber[] CombSortDesc<TNumber>(this TNumber[] array)
+        where TNumber : INumber<TNumber> => CombSortBase(array, true);
 }

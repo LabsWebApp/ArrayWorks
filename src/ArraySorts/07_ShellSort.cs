@@ -17,17 +17,18 @@
 public static partial class SortExtensions
 {
     // Сортировка Шелла
-    public static int[] ShellSort(this int[] array)
+    private static TNumber[] ShellSortBase<TNumber>(TNumber[] array, bool desc)
+        where TNumber : INumber<TNumber>
     {
-        if (array.Length < 2) return array;
         //расстояние между элементами, которые сравниваются
         var d = array.Length >> 1;
+        var greater = Greater<TNumber>(desc);
         while (d > 0)
         {
             for (var i = d; i < array.Length; i++)
             {
                 var j = i;
-                while (j >= d && array[j - d] > array[j])
+                while (j >= d && greater(array[j - d], array[j]))
                 {
                     array.Swap(j, j - d);
                     j -= d;
@@ -39,4 +40,20 @@ public static partial class SortExtensions
 
         return array;
     }
+
+    /// <summary>
+    /// Сортировка Шелла, входящий массив будет отсортирован
+    /// </summary>
+    /// <param name="array">входящий массив</param>
+    /// <returns>отсортированный входящий массив</returns>
+    public static TNumber[] ShellSort<TNumber>(this TNumber[] array)
+        where TNumber : INumber<TNumber> => ShellSortBase(array, false);
+
+    /// <summary>
+    /// Сортировка Шелла по убыванию, входящий массив будет отсортирован
+    /// </summary>
+    /// <param name="array">входящий массив</param>
+    /// <returns>отсортированный по убыванию входящий массив</returns>
+    public static TNumber[] ShellSortDesc<TNumber>(this TNumber[] array)
+        where TNumber : INumber<TNumber> => ShellSortBase(array, true);
 }

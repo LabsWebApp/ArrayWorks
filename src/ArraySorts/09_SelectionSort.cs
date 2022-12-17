@@ -14,28 +14,47 @@
 public static partial class SortExtensions
 {
     //метод поиска позиции минимального элемента подмассива, начиная с позиции n
-    private static int IndexOfMin(this int[] array, int n)
+    private static int IndexOfMin<TNumber>(this TNumber[] array, int n, bool desc)
+        where TNumber : INumber<TNumber>
     {
         var result = n;
+        var less = Less<TNumber>(desc);
         for (var i = n; i < array.Length; ++i)
-            if (array[i] < array[result])
+            if (less(array[i], array[result]))
                 result = i;
 
         return result;
     }
 
     //сортировка выбором
-    private static int[] SelectionSort(this int[] array, int currentIndex)
+    private static TNumber[] SelectionSort<TNumber>(this TNumber[] array, int currentIndex, bool desc)
+        where TNumber : INumber<TNumber>
     {
-        if (array.Length < 2) return array;
         if (currentIndex == array.Length) return array;
 
-        var index = array.IndexOfMin(currentIndex);
+        var index = array.IndexOfMin(currentIndex, desc);
         if (index != currentIndex) array.Swap(index, currentIndex);
 
-        return array.SelectionSort(currentIndex + 1);
+        return array.SelectionSort(currentIndex + 1, desc);
     }
 
-    public static int[] SelectionSort(this int[] array) =>
-        array.SelectionSort(0);
+    private static TNumber[] SelectionSortBase<TNumber>(TNumber[] array, bool desc)
+        where TNumber : INumber<TNumber> =>
+        array.SelectionSort(0, desc);
+
+    /// <summary>
+    /// сортировка выбором, входящий массив будет отсортирован
+    /// </summary>
+    /// <param name="array">входящий массив</param>
+    /// <returns>отсортированный входящий массив</returns>
+    public static TNumber[] SelectionSort<TNumber>(this TNumber[] array)
+        where TNumber : INumber<TNumber> => SelectionSortBase(array, false);
+
+    /// <summary>
+    /// сортировка выбором по убыванию, входящий массив будет отсортирован
+    /// </summary>
+    /// <param name="array">входящий массив</param>
+    /// <returns>отсортированный по убыванию входящий массив</returns>
+    public static TNumber[] SelectionSortDesc<TNumber>(this TNumber[] array)
+        where TNumber : INumber<TNumber> => SelectionSortBase(array, true);
 }

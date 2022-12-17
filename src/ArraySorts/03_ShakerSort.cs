@@ -20,16 +20,17 @@
 public static partial class SortExtensions
 {
     //сортировка перемешиванием
-    public static int[] ShakerSort(this int[] array)
+    private static TNumber[] ShakerSortBase<TNumber>(TNumber[] array, bool desc)
+        where TNumber : INumber<TNumber>
     {
-        if (array.Length < 2) return array;
+        var greater = Greater<TNumber>(desc);
         for (var i = 0; i < array.Length >> 1; i++)
         {
             var swapFlag = false;
             //проход слева направо
             for (var j = i; j < array.Length - i - 1; j++)
             {
-                if (array[j] > array[j + 1])
+                if (greater(array[j], array[j + 1]))
                 {
                     array.Swap(j, j + 1);
                     swapFlag = true;
@@ -39,7 +40,7 @@ public static partial class SortExtensions
             //проход справа налево
             for (var j = array.Length - 2 - i; j > i; j--)
             {
-                if (array[j - 1] > array[j])
+                if (greater(array[j - 1], array[j]))
                 {
                     array.Swap(j - 1, j);
                     swapFlag = true;
@@ -49,6 +50,23 @@ public static partial class SortExtensions
             //если обменов не было выходим
             if (!swapFlag) break;
         }
+
         return array;
     }
+
+    /// <summary>
+    /// сортировка перемешиванием, входящий массив будет отсортирован
+    /// </summary>
+    /// <param name="array">входящий массив</param>
+    /// <returns>отсортированный входящий массив</returns>
+    public static TNumber[] ShakerSort<TNumber>(this TNumber[] array)
+        where TNumber : INumber<TNumber> => ShakerSortBase(array, false);
+
+    /// <summary>
+    /// сортировка перемешиванием по убыванию, входящий массив будет отсортирован
+    /// </summary>
+    /// <param name="array">входящий массив</param>
+    /// <returns>отсортированный по убыванию входящий массив</returns>
+    public static TNumber[] ShakerSortDesc<TNumber>(this TNumber[] array)
+        where TNumber : INumber<TNumber> => ShakerSortBase(array, true);
 }

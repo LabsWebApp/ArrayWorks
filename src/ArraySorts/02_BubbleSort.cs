@@ -11,14 +11,31 @@
 public static partial class SortExtensions
 {
     //сортировка пузырьком
-    public static int[] BubbleSort(this int[] array)
+    private static TNumber[] BubbleSortBase<TNumber>(TNumber[] array , bool desc)
+        where TNumber : INumber<TNumber>
     {
-        if (array.Length < 2) return array;
+        var greater = Greater<TNumber>(desc);
         var len = array.Length;
         for (var i = 1; i < len; i++)
             for (var j = 0; j < len - i; j++) 
-                if (array[j] > array[j + 1]) 
+                if (greater(array[j], array[j + 1])) 
                     array.Swap(j, j + 1);
         return array;
     }
+
+    /// <summary>
+    /// сортировка пузырьком, входящий массив будет отсортирован
+    /// </summary>
+    /// <param name="array">входящий массив</param>
+    /// <returns>отсортированный входящий массив</returns>
+    public static TNumber[] BubbleSort<TNumber>(this TNumber[] array)
+        where TNumber : INumber<TNumber> => BubbleSortBase(array, false);
+
+    /// <summary>
+    /// сортировка пузырьком по убыванию, входящий массив будет отсортирован
+    /// </summary>
+    /// <param name="array">входящий массив</param>
+    /// <returns>отсортированный по убыванию входящий массив</returns>
+    public static TNumber[] BubbleSortDesc<TNumber>(this TNumber[] array)
+        where TNumber : INumber<TNumber> => BubbleSortBase(array, true);
 }

@@ -7,6 +7,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="10_QuickSortRecursive - Копировать.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<None Include="01_BogoSort.cs">
 			<DependentUpon>Sorts.cs</DependentUpon>
 		</None>
@@ -37,16 +41,28 @@
 		<None Include="10_QuickSort.cs">
 			<DependentUpon>Sorts.cs</DependentUpon>
 		</None>
+		<None Include="QuickSortRecursive.cs">
+			<DependentUpon>10_QuickSort.cs</DependentUpon>
+		</None>
 		<None Include="11_GnomeSort.cs">
 			<DependentUpon>Sorts.cs</DependentUpon>
 		</None>
-		<None Include="12_TreeSort.cs">
+		<None Include="12_HeapSort.cs">
 			<DependentUpon>Sorts.cs</DependentUpon>
+		</None>
+		<None Include="TreeSort.cs">
+			<DependentUpon>12_HeapSort.cs</DependentUpon>
+		</None>
+		<None Include="TreeNode.cs">
+			<DependentUpon>TreeSort.cs</DependentUpon>
 		</None>
 		<None Include="13_CombSort.cs">
 			<DependentUpon>Sorts.cs</DependentUpon>
 		</None>
 		<None Include="14_CountingSort.cs">
+			<DependentUpon>Sorts.cs</DependentUpon>
+		</None>
+		<None Include="15_IntroSort.cs">
 			<DependentUpon>Sorts.cs</DependentUpon>
 		</None>
 	</ItemGroup>

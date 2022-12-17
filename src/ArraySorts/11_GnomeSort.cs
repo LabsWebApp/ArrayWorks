@@ -13,15 +13,15 @@
 public static partial class SortExtensions
 {
     //Гномья сортировка
-    public static int[] GnomeSort(this int[] array)
+    private static TNumber[] GnomeSortBase<TNumber>(TNumber[] array, bool desc)
+        where TNumber : INumber<TNumber>
     {
-        if (array.Length < 2) return array;
         var index = 1;
         var nextIndex = index + 1;
-
+        var less = Less<TNumber>(desc);
         while (index < array.Length)
         {
-            if (array[index - 1] < array[index]) index = nextIndex++;
+            if (less(array[index - 1], array[index])) index = nextIndex++;
             else
             {
                 array.Swap(index - 1, index--);
@@ -30,4 +30,20 @@ public static partial class SortExtensions
         }
         return array;
     }
+
+    /// <summary>
+    /// Гномья сортировка, входящий массив будет отсортирован
+    /// </summary>
+    /// <param name="array">входящий массив</param>
+    /// <returns>отсортированный массив</returns>
+    public static TNumber[] GnomeSort<TNumber>(this TNumber[] array)
+        where TNumber : INumber<TNumber> => GnomeSortBase(array, false);
+
+    /// <summary>
+    /// Гномья сортировка по убыванию, входящий массив будет отсортирован
+    /// </summary>
+    /// <param name="array">входящий массив</param>
+    /// <returns>отсортированный по убыванию входящий массив</returns>
+    public static TNumber[] GnomeSortDesc<TNumber>(this TNumber[] array)
+        where TNumber : INumber<TNumber> => GnomeSortBase(array, true);
 }

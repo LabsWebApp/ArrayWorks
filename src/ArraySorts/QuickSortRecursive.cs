@@ -19,81 +19,61 @@
  */
 
 /*
- * Вариант сортировки не использует рекурсию (правильная сортировка)
+ * Вариант сортировки использует рекурсию
+ * (НЕ ПРАВИЛЬНОЕ РЕШЕНИЕ) - приводит к переполнению стека
  */
 public static partial class SortExtensions
 {
-    //быстрая сортировка
-    private static TNumber[] QuickSortBase<TNumber>(TNumber[] array, bool desc)
+    //метод возвращающий индекс опорного элемента
+    private static int Partition<TNumber>(TNumber[] array, int left, int right, Func<TNumber, TNumber, bool> less)
         where TNumber : INumber<TNumber>
     {
-        if (array.Length < 2) return array;
+        var pivot = array[right];
 
-        var greater = Greater<TNumber>(desc);
-        var greaterEqual = GreaterEqual<TNumber>(desc);
-        var lessEqual = LessEqual<TNumber>(desc);
+        var pivotIndex = left;
 
-        var stack = new Stack<int>();
+        for (var i = left; i < right; i++)
+            if (less(array[i], pivot)) array.Swap(pivotIndex++, i);
 
-        var index = 0;
-        var right = array.Length - 1;
+        array[right] = array[pivotIndex];
+        array[pivotIndex] = pivot;
+        return pivotIndex;
+    }
 
-        stack.Push(index);
-        stack.Push(right);
+    //быстрая сортировка
+    private static TNumber[] QuickSortRecursive<TNumber>(this TNumber[] array, 
+        int left, int right, bool desc)
+        where TNumber : INumber<TNumber>
+    {
+        if (array.Length < 2 || left >= right) return array;
 
-        while (stack.Count > 0)
-        {
-            var rightSubarray = stack.Pop();
-            var leftSubarray = stack.Pop();
-            var left = leftSubarray + 1;
-            index = leftSubarray;
-            right = rightSubarray;
+        var less = Less<TNumber>(desc);
 
-            var pivot = array[index];
+        var pivotIndex = Partition(array, left, right, less);
 
-            if (left > right) continue;
-
-            while (left < right)
-            {
-                while (left <= right && lessEqual(array[left], pivot)) left++;    
-                while (left <= right && greaterEqual(array[right], pivot)) right--;
-
-                if (right >= left) array.Swap(left, right);
-            }
-
-            if (index <= right)
-                if (greater(array[index], array[right]))
-                    array.Swap(index, right);
-
-            if (leftSubarray < right)
-            {
-                stack.Push(leftSubarray);
-                stack.Push(right - 1);
-            }
-
-            if (rightSubarray > right)
-            {
-                stack.Push(right + 1);
-                stack.Push(rightSubarray);
-            }
-        }
+        QuickSortRecursive(array, left, pivotIndex - 1, desc);
+        QuickSortRecursive(array, pivotIndex + 1, right, desc);
 
         return array;
     }
+
+    private static TNumber[] QuickSortRecursiveBase<TNumber>(TNumber[] array, bool desc)
+        where TNumber : INumber<TNumber> =>
+        array.QuickSortRecursive(0, array.Length - 1, desc);
 
     /// <summary>
     /// быстрая сортировка, входящий массив будет отсортирован
     /// </summary>
     /// <param name="array">входящий массив</param>
     /// <returns>отсортированный входящий массив</returns>
-    public static TNumber[] QuickSort<TNumber>(this TNumber[] array)
-        where TNumber : struct, INumber<TNumber> => QuickSortBase(array, false);
+    public static TNumber[] QuickSortRecursive<TNumber>(this TNumber[] array)
+        where TNumber : INumber<TNumber> => QuickSortRecursiveBase(array, false);
 
     /// <summary>
     /// быстрая сортировка по убыванию, входящий массив будет отсортирован
     /// </summary>
     /// <param name="array">входящий массив</param>
     /// <returns>отсортированный по убыванию входящий массив</returns>
-    public static TNumber[] QuickSortDesc<TNumber>(this TNumber[] array)
-        where TNumber : INumber<TNumber> => QuickSortBase(array, true);
+    public static TNumber[] QuickSortRecursiveDesc<TNumber>(this TNumber[] array)
+        where TNumber : INumber<TNumber> => QuickSortRecursiveBase(array, true);
 }
