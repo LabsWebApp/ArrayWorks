@@ -14,11 +14,7 @@ public static class ArrayPrimitiveExtensions
     /// <param name="number">число, которое требуется найти в массиве</param>
     /// <returns>true - если число найдено, в противном случае - false</returns>
     public static bool ArrayContains<TNumber>(this TNumber[] numbers, TNumber number)
-        where TNumber : INumber<TNumber>
-    {
-        foreach (var num in numbers) if (number == num) return true;
-        return false;
-    }
+        where TNumber : INumber<TNumber> => numbers.Any(num => number == num);
 
     /// <summary>
     /// Конвертирует массив чисел в строку с возможностью вывода этой строки в консоль
@@ -32,7 +28,7 @@ public static class ArrayPrimitiveExtensions
         var sb = new StringBuilder();
         foreach (var item in numbers) sb.Append(item).Append(' ');
         var result = sb.ToString().TrimEnd(' ');
-        if (print) Console.WriteLine(result);
+        if (print) WriteLine(result);
         return result;
     }
 
@@ -82,6 +78,7 @@ public static class ArrayPrimitiveExtensions
         if (right < left || right >= array.Length)
             throw new ArgumentOutOfRangeException($"{nameof(left)} or/and {nameof(right)}", 
                 $"Нарушено одно или более условий: 0 <= {nameof(left)} <= {nameof(right)} < {nameof(array)}.Length");
+        
         var closestNumbers = error < TNumber.Zero;
         if (closestNumbers) error = TNumber.Zero;
 
@@ -96,45 +93,67 @@ public static class ArrayPrimitiveExtensions
 
         ValueTuple<int, int> FindResults(int index)
         {
-            if (error == TNumber.Zero && Abs(array[index] - key) != TNumber.Zero)
-                return NoResultTuple;
+            if (!equals(array[index], key)) return NoResultTuple;
 
-            void Left(int x)
+            int Left(int x)
             {
+                if (!equals(array[x - 1], key)) return x;
+                if (equals(array[left], key)) return left;
+                x--;
+                int m;
                 do
                 {
-                    var m = (left + x) >> 1;
-                    if (equals(array[m], key)) x = m - 1;
-                    else left = m + 1;
+                    m = (left + x) >> 1;
+                    if (equals(array[m], key))
+                    {
+                        if (!equals(array[m - 1], key)) return m;
+                        x = m - 1;
+                    }
+                    else
+                    {
+                        if (equals(array[left + 1], key)) return left + 1;
+                        left = m + 1;
+                    }
                 } while (left <= x);
+
+                return m;
             }
 
-            void Right(int x)
+            int Right(int x)
             {
+                if (!equals(array[x + 1], key)) return x;
+                if (equals(array[right], key)) return right;
+                x++;
+                int m;
                 do
                 {
-                    var m = (x + right) >> 1;
-                    if (equals(array[m], key)) x = m + 1;
-                    else right = m - 1;
+                    m = (x + right) >> 1;
+                    if (equals(array[m], key))
+                    {
+                        if (!equals(array[m + 1], key)) return m;
+                        x = m + 1;
+                    }
+                    else
+                    {
+                        if (equals(array[right - 1], key)) return right - 1;
+                        right = m - 1;
+                    }
                 } while (x <= right);
+                return m;
             }
-
-            //bool Right(int x) => x <= right && equals(array[x], key);
 
             switch (closes)
             {
                 case ClosestResults.Any:
                     return (index, index);
                 case ClosestResults.First:
-                    Left(index);
+                    left = Left(index);
                     return (left, left);
                 case ClosestResults.Last:
-                    Right(index);
+                    right = Right(index);
                     return (right, right);
                 case ClosestResults.All:
-                    Left(index);
-                    Right(index);
-                    return (left, right);
+                    return (Left(index), Right(index));
                 default:
                     throw new ArgumentOutOfRangeException(nameof(closes), closes, null);
             }

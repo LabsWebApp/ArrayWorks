@@ -41,5 +41,5 @@ public static partial class SortExtensions
     /// <param name="array">входящий массив</param>
     /// <returns>массив, составленный из отсортированных по убыванию элементов входящего массива</returns>
     public static TNumber[] IntroSortDesc<TNumber>(this TNumber[] array)
-        where TNumber : INumber<TNumber> => IntroSortBase(array, false);
+        where TNumber : INumber<TNumber> => IntroSortBase(array, true);
 }

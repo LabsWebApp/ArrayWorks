@@ -9,49 +9,52 @@ using BenchmarkDotNet.Running;
 //ReadKey();
 #endregion
 
-//#region BinarySearch
+#region BinarySearch
 
-//int i = 0;
+var i = 0;
 
-//int Count(double[] a1, double key, double err)
-//{
-//    int res = 0;
-//    a1.AsParallel().ForAll(x =>
-//    {
-//        if (Abs(x - key) <= err) 
-//            Interlocked.Increment(ref res);
-//    });
-//    return res;
-//}
-//while (i++ < 1000) 
-//{
-//    var arr = RandomDoubleArray(Rand.Next(-5,  -2), Rand.Next(-1, 10), 15000);
+int Count(IEnumerable<double> a1, double key, double err)
+{
+    var res = 0;
+    a1.AsParallel().ForAll(x =>
+    {
+        if (Abs(x - key) <= err) Interlocked.Increment(ref res);
+    });
+    return res;
+}
+while (i++ < 1000)
+{
+    var arr = 
+        RandomDoubleArray(Rand.Next(-20, -2), Rand.Next(-1, 10), 15000)
+            .QuickSortRecursiveDesc();
+    var key = arr[1000] - 0.01;
+    WriteLine($"arr[1000] = {arr[1000]} key = {key}");
+    var c = Count(arr, key, 0.01);
+    var t = arr.BinarySearchDesc(key, closest: ClosestResults.All, error: 0.1 /*, left: 2, right: 28*/);
 
-//    arr.QuickSortRecursiveDesc();
-//    var key = arr[100] + 0.01;
-//    var c = Count(arr, key, 0.01);
-//    var t = arr.BinarySearchDesc(key, closest: ClosestResults.All, error: 0.1 /*, left: 2, right: 28*/);
+    if (t.Item2 - t.Item1 + 1 != c)
+    {
+        if (t.Item1 >= 0)
+        {
+            WriteLine($"arr[{t.Item1}] = {arr[t.Item1]} key = {key} ({arr[t.Item1] - key})");
+            WriteLine($"arr[{t.Item1 - 1}] = {arr[t.Item1 - 1]} ({arr[t.Item1 - 1] - key})");
+            WriteLine($"arr[{t.Item2}] = {arr[t.Item2]} key = {key} ({key - arr[t.Item2]})");
+            WriteLine($"arr[{t.Item2 + 1}] = {arr[t.Item2 + 1]} ({key - arr[t.Item2 + 1]})");
+        }
+        //arr.PrintArray();t.Item1
+        WriteLine($"{t}; шаг: {i - 1}; count = {c}");
+        WriteLine();
+        if (i > 5) break;
+    }
+    if (i % 100 == 0) { WriteLine(t); }
 
-//    if (t.Item2 - t.Item1 + 1 != c)
-//    {
-//        if (t.Item1 >= 0)
-//        {
-//            WriteLine($"arr[{t.Item1}] = {arr[t.Item1]} key = {key} ({arr[t.Item1] - key})");
-//            WriteLine($"arr[{t.Item2}] = {arr[t.Item2]} key = {key} ({key - arr[t.Item2]})");
-//        }
-//        //arr.PrintArray();t.Item1
-//        WriteLine($"{t}; шаг: {i - 1}; count = {c}");
-//        break;
-//    }
-//    if(i%100==0) {WriteLine(t); }
-
-//    //arr.QuickSortRecursiveDesc().PrintArray();
-//    //var key = Convert.ToDouble(ReadLine());
-//    //WriteLine(arr.BinarySearchDesc(key, closest: ClosestResults.All, error: 1/*, left: 2, right: 28*/));
-//}
-//WriteLine("****");
-//ReadKey();
-//#endregion
+    //arr.QuickSortRecursiveDesc().PrintArray();
+    //var key = Convert.ToDouble(ReadLine());
+    //WriteLine(arr.BinarySearchDesc(key, closest: ClosestResults.All, error: 1/*, left: 2, right: 28*/));
+}
+WriteLine("****");
+ReadKey();
+#endregion
 
 //#region Min <-> Max
 //var a = UniqueIntRandomArray(-10, 50, 10);
@@ -63,14 +66,14 @@ using BenchmarkDotNet.Running;
 //#endregion
 
 #region Sort
-const int tests = 100000;
+const int tests = 1000;
 var finalReport = "*****\nИТОГО:";
 
 #region Methods 
 void Sort(Func<int[], int[]> sort, int[]? array = null, bool unique = true)
 {
-    string name = sort.GetMethodInfo().Name;
-    bool desc = name.EndsWith("Desc");
+    var name = sort.GetMethodInfo().Name;
+    var desc = name.EndsWith("Desc");
 
     WriteLine($"\n{name}:");
     if (array is null)
@@ -115,14 +118,14 @@ void Sort(Func<int[], int[]> sort, int[]? array = null, bool unique = true)
 {
     Stopwatch sw = new();
     
-    string name = sort.GetMethodInfo().Name;
-    bool desc = name.EndsWith("Desc");
+    var name = sort.GetMethodInfo().Name;
+    var desc = name.EndsWith("Desc");
     for (var i = 0; i < tests; i++)
     {
         var array = RandomIntArray(
-            Rand.Next(-200000, -500),
-            Rand.Next(500, 200000),
-            10000);
+            Rand.Next(-2000, -500),
+            Rand.Next(500, 2000),
+            1000);
         sw.Start();
         var sorted = sort(array);
         sw.Stop();
