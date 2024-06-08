@@ -176,7 +176,7 @@ public static class ArrayPrimitiveExtensions
             }
         }
 
-        int middle = 0, l = left, r = right;
+        int middle, l = left, r = right;
 
         Work leftWork = closes is ClosestResults.All or ClosestResults.First
             ? (ref int m) =>
